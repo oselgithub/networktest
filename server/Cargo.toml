@@ -1,4 +1,6 @@
 [package]
 name = "server"
 version = "0.1.0"
-authors = ["oselgithub <oselgithub@seznam.cz>"]
+authors = ["oselgithub <oselgithub@seznam.cz>"] 
+
+[dependencies]
