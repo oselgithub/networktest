@@ -60,7 +60,16 @@ impl BookProvider for MemoryProvider {
 #[test]
 fn crud_test() {
   let mut instance = MemoryProvider::new();
-  let mut book1 = &Book::new("first", "1");
-  let filter1 = |book: &Book| book.get_isbn() == "1";
+  let book1 = &Book::new("first", "1");
+  let book1_updated = &Book::new("first updated", "1");
   instance.add(&book1);
+  instance.add(&book1_updated);
+  let predicate = |book: &&Book| book.get_isbn() == "1";
+  {
+  	assert_eq!(book1, instance.find(&predicate).next().unwrap());
+  }
+  instance.update(&book1_updated);
+  {
+  	assert_eq!(book1_updated, instance.find(&predicate).next().unwrap());
+  }
 }
