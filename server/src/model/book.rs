@@ -1,9 +1,9 @@
 use std::iter::Iterator;
 
 /// Book metadata
-#[derive(Debug,Clone,PartialEq)]
+#[derive(Debug, PartialEq, Clone, RustcDecodable, RustcEncodable)]
 pub enum Metadata {
-  /// Book series 
+  /// Book series
   Series {
     /// Series name
     name: String,
@@ -15,7 +15,7 @@ pub enum Metadata {
 }
 
 /// Book struct
-#[derive(Debug,Clone,PartialEq)]
+#[derive(Debug, PartialEq, Clone, RustcDecodable, RustcEncodable)]
 pub struct Book {
   /// Book name
   name: String,
@@ -34,38 +34,38 @@ impl Book {
       metadata: Vec::new(),
     }
   }
-  
+
   /// Add metadata to book
   pub fn add_metadata(&mut self, metadata: &Metadata) {
     self.metadata.push(metadata.clone());
   }
-  
+
   /// Get book name
   pub fn get_name(&self) -> &str {
     &self.name
   }
-  
-  /// Get book isbn 
+
+  /// Get book isbn
   pub fn get_isbn(&self) -> &str {
     &self.isbn
-  } 
+  }
 }
 
 /// Provider of book instances
 pub trait BookProvider {
   /// Add new book to collection
   fn add(&mut self, book: &Book) -> bool;
-  
+
   /// Find books in collection
   fn find< 'a, P >(&'a self, predicate: &'a P) -> Box< Iterator< Item=&'a Book > + 'a >
   		where P: for<'r> Fn(&'r &Book) -> bool;
-  
+
   /// Update book in collection
   fn update(&mut self, book: &Book) -> bool;
-  
+
   /// Delete books from collection
   fn delete(&mut self, isbn: &str);
-  
+
   /// Delete all books from collection
   fn delete_all(&mut self);
 }

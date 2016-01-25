@@ -77,7 +77,7 @@ fn book_crud_test() {
   }
 }
 
-struct AuthorMemoryProvider {
+pub struct AuthorMemoryProvider {
   authors: Vec< Author >,
 }
 
@@ -95,9 +95,9 @@ impl AuthorProvider for AuthorMemoryProvider {
     true
   }
 
-  fn find< 'a, P >(&'a self, predicate: &'a P) -> Box< Iterator< Item=&'a Author > + 'a >
-  		where P: for<'r> Fn(&'r &Author) -> bool {
-    Box::new(self.authors.iter().filter(predicate))
+  fn find(&self, surname: &str) -> Vec< &Author > {
+    self.authors.iter().filter(
+      |author: &&Author| author.get_surname() == surname).collect::< Vec < _ > >()
   }
 
   fn update(&mut self, author: &Author) -> bool {
@@ -124,12 +124,7 @@ fn author_crud_test() {
   let author2 = Author::new("Donald", "Ervin", "Knuth", &Date::new(1938, 1, 10));
   instance.add(&author1);
   instance.add(&author2);
-  let predicate = |author: &&Author| author.get_first_name() == "Donald";
-  {
-  	assert_eq!(&author2, instance.find(&predicate).next().unwrap());
-  }
+	assert_eq!(&author2, *instance.find("Knuth").iter().next().unwrap());
   instance.delete(&author2);
-  {
-    assert!(instance.find(&predicate).next().is_none());
-  }
+  assert!(instance.find("Knuth").iter().next().is_none());
 }

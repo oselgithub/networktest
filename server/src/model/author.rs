@@ -1,6 +1,6 @@
 
 /// Simple date struct
-#[derive(Debug,Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq, RustcDecodable, RustcEncodable)]
 pub struct Date {
 	year: i16,
 	month: u8,
@@ -30,7 +30,7 @@ impl Date {
 }
 
 /// Author struct
-#[derive(Debug,PartialEq,Clone)]
+#[derive(Debug, PartialEq, Clone, RustcDecodable, RustcEncodable)]
 pub struct Author {
   /// first name
   first_name: String,
@@ -74,13 +74,12 @@ impl Author {
 }
 
 /// Provider of author instances
-pub trait AuthorProvider {
+pub trait AuthorProvider : Send + Sync {
   /// Add new author to collection
   fn add(&mut self, author: &Author) -> bool;
 
   /// Find authors in collection
-  fn find< 'a, P >(&'a self, predicate: &'a P) -> Box< Iterator< Item=&'a Author > + 'a >
-  		where P: for<'r> Fn(&'r &Author) -> bool;
+  fn find(&self, surname: &str) -> Vec< &Author >;
 
   /// Update author in collection
   fn update(&mut self, author: &Author) -> bool;
