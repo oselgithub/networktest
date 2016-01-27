@@ -5,7 +5,6 @@ extern crate rustc_serialize;
 
 use iron::prelude::{ Request, IronResult, Response, Iron };
 use iron::status;
-use router::Router;
 use std::sync::{ Arc, Mutex };
 
 mod handler;

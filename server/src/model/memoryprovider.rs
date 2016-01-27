@@ -1,11 +1,8 @@
 use std::collections::HashMap;
 use std::iter::Iterator;
 
-use model::author::Author;
-use model::author::AuthorProvider;
-use model::author::Date;
-use model::book::Book;
-use model::book::BookProvider;
+use model::author::{ Author, AuthorProvider, Date };
+use model::book::{ Book, BookProvider };
 
 type BookCollection = HashMap< String, Book >;
 
@@ -35,11 +32,6 @@ impl BookProvider for BookMemoryProvider {
     }
   }
 
-  fn find< 'a, P >(&'a self, predicate: &'a P) -> Box< Iterator< Item=&'a Book > + 'a >
-  		where P: for<'r> Fn(&'r &Book) -> bool {
-    Box::new(self.books.values().filter(predicate))
-  }
-
   fn update(&mut self, book: &Book) -> bool {
     let isbn = book.get_isbn();
     if self.books.contains_key(isbn) {
@@ -58,6 +50,10 @@ impl BookProvider for BookMemoryProvider {
   fn delete_all(&mut self) {
 		self.books.clear();
   }
+
+  fn iter<'a>(& 'a self) -> Box< Iterator< Item = & 'a Book > + 'a > {
+    Box::new(self.books.values())
+  }
 }
 
 #[test]
@@ -67,14 +63,9 @@ fn book_crud_test() {
   let book1_updated = &Book::new("first updated", "1");
   assert!(instance.add(&book1));
   assert!(!instance.add(&book1_updated));
-  let predicate = |book: &&Book| book.get_isbn() == "1";
-  {
-  	assert_eq!(book1, instance.find(&predicate).next().unwrap());
-  }
+	assert_eq!(book1, instance.iter().filter(|book| book.get_isbn() == "1").next().unwrap());
   assert!(instance.update(&book1_updated));
-  {
-  	assert_eq!(book1_updated, instance.find(&predicate).next().unwrap());
-  }
+  assert_eq!(book1_updated, instance.iter().filter(|book| book.get_isbn() == "1").next().unwrap());
 }
 
 pub struct AuthorMemoryProvider {
@@ -95,11 +86,6 @@ impl AuthorProvider for AuthorMemoryProvider {
     true
   }
 
-  fn find(&self, surname: &str) -> Vec< &Author > {
-    self.authors.iter().filter(
-      |author: &&Author| author.get_surname() == surname).collect::< Vec < _ > >()
-  }
-
   fn update(&mut self, author: &Author) -> bool {
     false
   }
@@ -115,6 +101,10 @@ impl AuthorProvider for AuthorMemoryProvider {
   fn delete_all(&mut self) {
     self.authors.clear()
   }
+
+  fn iter<'a>(& 'a self) -> Box< Iterator< Item = & 'a Author > + 'a > {
+    Box::new(self.authors.iter())
+  }
 }
 
 #[test]
@@ -124,7 +114,7 @@ fn author_crud_test() {
   let author2 = Author::new("Donald", "Ervin", "Knuth", &Date::new(1938, 1, 10));
   instance.add(&author1);
   instance.add(&author2);
-	assert_eq!(&author2, *instance.find("Knuth").iter().next().unwrap());
+	assert_eq!(&author2, instance.iter().filter(|author| author.get_surname() == "Knuth").next().unwrap());
   instance.delete(&author2);
-  assert!(instance.find("Knuth").iter().next().is_none());
+  assert!(instance.iter().filter(|author| author.get_surname() == "Knuth").next().is_none());
 }

@@ -56,10 +56,6 @@ pub trait BookProvider {
   /// Add new book to collection
   fn add(&mut self, book: &Book) -> bool;
 
-  /// Find books in collection
-  fn find< 'a, P >(&'a self, predicate: &'a P) -> Box< Iterator< Item=&'a Book > + 'a >
-  		where P: for<'r> Fn(&'r &Book) -> bool;
-
   /// Update book in collection
   fn update(&mut self, book: &Book) -> bool;
 
@@ -68,4 +64,7 @@ pub trait BookProvider {
 
   /// Delete all books from collection
   fn delete_all(&mut self);
+
+  /// Return itertor over all book
+  fn iter<'a>(& 'a self) -> Box< Iterator< Item = & 'a Book > + 'a >;
 }

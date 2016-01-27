@@ -1,3 +1,4 @@
+use std::iter::Iterator;
 
 /// Simple date struct
 #[derive(Debug, Clone, PartialEq, RustcDecodable, RustcEncodable)]
@@ -78,9 +79,6 @@ pub trait AuthorProvider : Send + Sync {
   /// Add new author to collection
   fn add(&mut self, author: &Author) -> bool;
 
-  /// Find authors in collection
-  fn find(&self, surname: &str) -> Vec< &Author >;
-
   /// Update author in collection
   fn update(&mut self, author: &Author) -> bool;
 
@@ -89,6 +87,9 @@ pub trait AuthorProvider : Send + Sync {
 
   /// Delete all authors from collection
   fn delete_all(&mut self);
+
+  /// Return itertor over all authors
+  fn iter<'a>(& 'a self) -> Box< Iterator< Item = & 'a Author > + 'a >;
 }
 
 #[test]
