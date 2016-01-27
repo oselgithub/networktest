@@ -17,6 +17,12 @@ pub struct AddHandler {
   authors: Arc< Mutex< Box< AuthorProvider > > >,
 }
 
+/// Get all authors http handler
+pub struct GetAllHandler {
+  /// author provider
+  authors: Arc< Mutex< Box< AuthorProvider > > >,
+}
+
 impl AddHandler {
   pub fn new(authors: &Arc< Mutex< Box< AuthorProvider > > >) -> AddHandler {
     AddHandler {
@@ -37,5 +43,27 @@ impl Handler for AddHandler {
       }
       Err(error) => Err(IronError::new(error, "Invalid message body"))
     }
+  }
+}
+
+impl GetAllHandler {
+  pub fn new(authors: &Arc< Mutex< Box< AuthorProvider > > >) -> GetAllHandler {
+    GetAllHandler {
+      authors: authors.clone(),
+    }
+  }
+}
+
+impl Handler for GetAllHandler {
+  fn handle(&self, request: &mut Request) -> IronResult< Response > {
+    let mut response = String::new();
+    {
+      let unlocked = self.authors.lock().unwrap();
+      for author in unlocked.iter() {
+        response.push_str(&json::encode(&author).unwrap());
+        response.push_str("\n");
+      }
+    }
+    Ok(Response::with((status::Ok, response)))
   }
 }
