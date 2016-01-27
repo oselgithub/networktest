@@ -12,26 +12,32 @@ use std::sync::{ Arc, Mutex };
 use model::author::{ Author, AuthorProvider };
 
 /// Add author http handler
-pub struct AddHandler {
+pub struct AddAuthorHandler {
   /// author provider
   authors: Arc< Mutex< Box< AuthorProvider > > >,
 }
 
 /// Get all authors http handler
-pub struct GetAllHandler {
+pub struct GetAllAuthorsHandler {
   /// author provider
   authors: Arc< Mutex< Box< AuthorProvider > > >,
 }
 
-impl AddHandler {
-  pub fn new(authors: &Arc< Mutex< Box< AuthorProvider > > >) -> AddHandler {
-    AddHandler {
+/// Delete auhtor http handler
+pub struct DeleteAuthorsHandler {
+  /// author provider
+  authors: Arc< Mutex< Box< AuthorProvider > > >,
+}
+
+impl AddAuthorHandler {
+  pub fn new(authors: &Arc< Mutex< Box< AuthorProvider > > >) -> AddAuthorHandler {
+    AddAuthorHandler {
       authors: authors.clone(),
     }
   }
 }
 
-impl Handler for AddHandler {
+impl Handler for AddAuthorHandler {
   fn handle(&self, request: &mut Request) -> IronResult< Response > {
     let mut body = String::new();
     request.body.read_to_string(&mut body).unwrap();
@@ -46,16 +52,16 @@ impl Handler for AddHandler {
   }
 }
 
-impl GetAllHandler {
-  pub fn new(authors: &Arc< Mutex< Box< AuthorProvider > > >) -> GetAllHandler {
-    GetAllHandler {
+impl GetAllAuthorsHandler {
+  pub fn new(authors: &Arc< Mutex< Box< AuthorProvider > > >) -> GetAllAuthorsHandler {
+    GetAllAuthorsHandler {
       authors: authors.clone(),
     }
   }
 }
 
-impl Handler for GetAllHandler {
-  fn handle(&self, request: &mut Request) -> IronResult< Response > {
+impl Handler for GetAllAuthorsHandler {
+  fn handle(&self, _: &mut Request) -> IronResult< Response > {
     let mut response = String::new();
     {
       let unlocked = self.authors.lock().unwrap();
@@ -65,5 +71,28 @@ impl Handler for GetAllHandler {
       }
     }
     Ok(Response::with((status::Ok, response)))
+  }
+}
+
+impl DeleteAuthorsHandler {
+  pub fn new(authors: &Arc< Mutex< Box< AuthorProvider > > >) -> DeleteAuthorsHandler {
+    DeleteAuthorsHandler {
+      authors: authors.clone(),
+    }
+  }
+}
+
+impl Handler for DeleteAuthorsHandler {
+  fn handle(&self, request: &mut Request) -> IronResult< Response > {
+    let mut body = String::new();
+    request.body.read_to_string(&mut body).unwrap();
+    let author: DecodeResult< Author > = json::decode(&body);
+    match author {
+      Ok(author) => {
+        self.authors.lock().unwrap().delete(&author);
+        Ok(Response::with((status::Ok, "OK")))
+      }
+      Err(error) => Err(IronError::new(error, "Invalid message body"))
+    }
   }
 }

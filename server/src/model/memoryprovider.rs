@@ -86,10 +86,6 @@ impl AuthorProvider for AuthorMemoryProvider {
     true
   }
 
-  fn update(&mut self, author: &Author) -> bool {
-    false
-  }
-
   fn delete(&mut self, author: &Author) {
     let indices = self.authors.iter().enumerate().filter_map(|(i, item)|
       if item == author { Some(i) } else { None }).collect::< Vec< usize > >();

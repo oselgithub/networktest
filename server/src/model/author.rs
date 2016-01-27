@@ -79,9 +79,6 @@ pub trait AuthorProvider : Send + Sync {
   /// Add new author to collection
   fn add(&mut self, author: &Author) -> bool;
 
-  /// Update author in collection
-  fn update(&mut self, author: &Author) -> bool;
-
   /// Delete author from collection
   fn delete(&mut self, author: &Author);
 

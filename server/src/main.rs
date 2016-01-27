@@ -10,19 +10,22 @@ use std::sync::{ Arc, Mutex };
 mod handler;
 mod model;
 
-use self::handler::{ AddHandler, GetAllHandler };
+use self::handler::{ AddAuthorHandler, GetAllAuthorsHandler, DeleteAuthorsHandler };
 use model::author::{ Author, AuthorProvider, Date };
-use model::memoryprovider::{ AuthorMemoryProvider };
+use model::book::{ BookProvider };
+use model::memoryprovider::{ AuthorMemoryProvider, BookMemoryProvider };
 
 fn main() {
   let authors: Arc< Mutex< Box< AuthorProvider > > > = Arc::new(Mutex::new(Box::new(AuthorMemoryProvider::new())));
+  let books: Arc< Mutex< Box< BookProvider > > > = Arc::new(Mutex::new(Box::new(BookMemoryProvider::new())));
   authors.lock().unwrap().add(&Author::new("Edsger", "Wybe", "Dijkstra", &Date::new(1930, 5, 11)));
   fn hello_world(_: &mut Request) -> IronResult< Response > {
     Ok(Response::with((status::Ok, "Hello World!")))
   }
   let router = router!(
     get "/" => hello_world,
-    post "/add" => AddHandler::new(&authors),
-    get "/get_all" => GetAllHandler::new(&authors));
+    post "/author/add" => AddAuthorHandler::new(&authors),
+    get "/author/get_all" => GetAllAuthorsHandler::new(&authors),
+  	post "/author/delete" => DeleteAuthorsHandler::new(&authors));
   Iron::new(router).http("localhost:3000").unwrap();
 }
