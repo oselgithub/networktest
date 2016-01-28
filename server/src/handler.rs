@@ -1,15 +1,15 @@
+extern crate library_model;
 extern crate rustc_serialize;
 
 use iron::error::IronError;
 use iron::middleware::Handler;
 use iron::prelude::{ Request, IronResult, Response };
 use iron::status;
+use library_model::author::{ Author, AuthorProvider };
 use rustc_serialize::json;
 use rustc_serialize::json::DecodeResult;
 use std::io::Read;
 use std::sync::{ Arc, Mutex };
-
-use model::author::{ Author, AuthorProvider };
 
 /// Add author http handler
 pub struct AddAuthorHandler {

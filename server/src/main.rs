@@ -1,4 +1,5 @@
 extern crate iron;
+extern crate library_model;
 #[macro_use(router)]
 extern crate router;
 extern crate rustc_serialize;
@@ -8,12 +9,11 @@ use iron::status;
 use std::sync::{ Arc, Mutex };
 
 mod handler;
-mod model;
 
 use self::handler::{ AddAuthorHandler, GetAllAuthorsHandler, DeleteAuthorsHandler };
-use model::author::{ Author, AuthorProvider, Date };
-use model::book::{ BookProvider };
-use model::memoryprovider::{ AuthorMemoryProvider, BookMemoryProvider };
+use library_model::author::{ Author, AuthorProvider, Date };
+use library_model::book::{ BookProvider };
+use library_model::memoryprovider::{ AuthorMemoryProvider, BookMemoryProvider };
 
 fn main() {
   let authors: Arc< Mutex< Box< AuthorProvider > > > = Arc::new(Mutex::new(Box::new(AuthorMemoryProvider::new())));

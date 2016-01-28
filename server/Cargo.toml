@@ -7,4 +7,9 @@ authors = ["oselgithub <oselgithub@seznam.cz>"]
 hyper = "*"
 iron = "*"
 router = "*"
-rustc-serialize = "0.3"
+rustc-serialize = "*"
+
+
+[dependencies.library-model]
+path = "../library-model"
+version  = "*"

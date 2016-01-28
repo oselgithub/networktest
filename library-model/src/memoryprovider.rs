@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::iter::Iterator;
 
-use model::author::{ Author, AuthorProvider, Date };
-use model::book::{ Book, BookProvider };
+use author::{ Author, AuthorProvider, Date };
+use book::{ Book, BookProvider };
 
 type BookCollection = HashMap< String, Book >;
 
