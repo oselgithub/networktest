@@ -9,7 +9,6 @@ iron = "*"
 router = "*"
 rustc-serialize = "*"
 
-
 [dependencies.library-model]
 path = "../library-model"
 version  = "*"

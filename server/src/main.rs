@@ -6,14 +6,15 @@ extern crate rustc_serialize;
 
 use iron::prelude::{ Request, IronResult, Response, Iron };
 use iron::status;
+use library_model::author::{ Author, AuthorProvider, Date };
+use library_model::book::{ BookProvider };
 use std::sync::{ Arc, Mutex };
 
 mod handler;
+mod memoryprovider;
 
-use self::handler::{ AddAuthorHandler, GetAllAuthorsHandler, DeleteAuthorsHandler };
-use library_model::author::{ Author, AuthorProvider, Date };
-use library_model::book::{ BookProvider };
-use library_model::memoryprovider::{ AuthorMemoryProvider, BookMemoryProvider };
+use handler::{ AddAuthorHandler, GetAllAuthorsHandler, DeleteAuthorsHandler };
+use memoryprovider::{ AuthorMemoryProvider, BookMemoryProvider };
 
 fn main() {
   let authors: Arc< Mutex< Box< AuthorProvider > > > = Arc::new(Mutex::new(Box::new(AuthorMemoryProvider::new())));

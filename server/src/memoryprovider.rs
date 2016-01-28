@@ -1,8 +1,9 @@
+extern crate library_model;
+
+use library_model::author::{ Author, AuthorProvider, Date };
+use library_model::book::{ Book, BookProvider };
 use std::collections::HashMap;
 use std::iter::Iterator;
-
-use author::{ Author, AuthorProvider, Date };
-use book::{ Book, BookProvider };
 
 type BookCollection = HashMap< String, Book >;
 
